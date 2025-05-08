@@ -16,7 +16,7 @@ export default function LoginViaEmail({
   };
 
   return (
-    <div className={`${method === "email" ? "flex" : "hidden"} flex flex-col`}>
+    <div className={`${method === "email" ? "flex flex-col" : "hidden"} `}>
       <label htmlFor="email">ایمیل :</label>
       <input
         dir="ltr"

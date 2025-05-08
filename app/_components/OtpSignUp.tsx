@@ -1,24 +1,36 @@
-import { otpLoginFn, sendOtp } from "@/lib/helperFunctions";
+import { verifyOtp, sendOtp } from "@/lib/helperFunctions";
 import { useState, useRef, useEffect } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
-import { useNavigation } from "../_hooks/useNavigation";
-import { setCookie } from "cookies-next";
 
-function OtpLogin({ username }: { username: string }) {
+function OtpSignUp({
+  phone,
+  email,
+  setShowSignUpForm,
+}: {
+  phone: string;
+  email?: string;
+  setShowSignUpForm: (a: {
+    data: {
+      email: null | string;
+      phone: null | string;
+    };
+    show: boolean;
+  }) => void;
+}) {
   const [otpCode, setOtpCode] = useState<null | string>(null);
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<null | string>(null);
-  const { navigateTo } = useNavigation();
+
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
-    async function sendOtpReq(username: string) {
-      await sendOtp(username);
+    async function sendOtpReq(phone: string) {
+      await sendOtp(phone);
     }
 
-    sendOtpReq(username);
-  }, [username]);
+    sendOtpReq(phone);
+  }, [phone]);
 
   const handleInputChange = (index: number, value: string) => {
     if (!/^\d?$/.test(value)) return;
@@ -66,9 +78,9 @@ function OtpLogin({ username }: { username: string }) {
   };
 
   async function handleOtpLogin() {
+    if (!phone || !otpCode) return;
     setIsLoading(true);
-    if (!username || !otpCode) return;
-    const data = await otpLoginFn({ username: username, code: otpCode });
+    const data = await verifyOtp({ username: phone, code: otpCode });
 
     if (data.errors) {
       setError("کدوارد شده درست نیست");
@@ -76,8 +88,13 @@ function OtpLogin({ username }: { username: string }) {
     } else {
       setError(null);
       setIsLoading(false);
-      setCookie("token", data.data, { maxAge: 60 * 10, path: "/" });
-      navigateTo("/loggedIn");
+      setShowSignUpForm({
+        data: {
+          phone: phone,
+          email: email ? email : null,
+        },
+        show: true,
+      });
     }
   }
 
@@ -85,8 +102,12 @@ function OtpLogin({ username }: { username: string }) {
 
   return (
     <>
-      <h2 className="my-3">رمز عبور یکبار مصرف ارسال شده را وارد کنید</h2>
-      <div className="flex flex-row justify-center gap-2" dir="ltr">
+      <h2 className="text-center max-w-[300px] wrap-break-word">
+        کد ارسال شده به
+        <span> {phone} </span>
+        را وارد کنید
+      </h2>
+      <div className="flex flex-row justify-center gap-2 mt-2" dir="ltr">
         {otp.map((digit, index) => (
           <input
             required
@@ -116,11 +137,11 @@ function OtpLogin({ username }: { username: string }) {
           disabled={isButtonDisabled}
           className={`w-full border border-white py-2 mt-4 rounded cursor-pointer bg-white text-black transition-all duration-300 active:translate-y-1 hover:bg-black hover:text-white disabled:opacity-50  disabled:cursor-not-allowed `}
         >
-          ورود با رمز یکبارمصرف
+          ثبت نام
         </button>
       )}
     </>
   );
 }
 
-export default OtpLogin;
+export default OtpSignUp;

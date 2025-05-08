@@ -11,6 +11,7 @@ export default function LoginForm({
   SetUserExists: (a: {
     status: "unchecked" | "notExists" | "exists";
     username: string | null;
+    method: null | "phone" | "email";
   }) => void;
 }) {
   const [method, setMethod] = useState("phone");
@@ -35,11 +36,13 @@ export default function LoginForm({
           SetUserExists({
             status: "exists",
             username: phoneValue,
+            method: "phone",
           });
         } else {
           SetUserExists({
             status: "notExists",
-            username: null,
+            username: phoneValue,
+            method: "phone",
           });
         }
       }
@@ -58,11 +61,13 @@ export default function LoginForm({
           SetUserExists({
             status: "exists",
             username: emailValue,
+            method: "email",
           });
         } else {
           SetUserExists({
             status: "notExists",
-            username: null,
+            username: emailValue,
+            method: "email",
           });
         }
       }

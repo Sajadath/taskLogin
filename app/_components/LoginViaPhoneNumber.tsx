@@ -32,7 +32,7 @@ export default function LoginViaPhoneNumber({
   };
 
   return (
-    <div className={`${method === "phone" ? "block" : "hidden"} flex flex-col`}>
+    <div className={`${method === "phone" ? "flex flex-col" : "hidden"} `}>
       <label htmlFor="phoneNumber">شماره تماس :</label>
       <input
         dir="ltr"
